@@ -6,99 +6,159 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Button,
 } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import BlockRGB from "./BlockRGB";
 
-function HomeScreen() {
-  const [colorArray, setColorArray] = useState([
-    { red: 255, green: 0, blue: 0, id: "0" },
-    { red: 0, green: 255, blue: 0, id: "1" },
-    { red: 0, green: 0, blue: 255, id: "2" },
-  ]);
 
-  function renderItem({ item }) {
-    return <BlockRGB red={item.red} green={item.green} blue={item.blue} />;
-  }
+
+function HomeScreen({navigation}) {
+  const [colorArray, setColorArray] = useState([]);
+
+function renderItem({ item }) {
+  return (
+    <TouchableOpacity onPress={() => navigation.navigate("Details", { ...item })}>
+      <BlockRGB red={item.red} green={item.green} blue={item.blue} />
+    </TouchableOpacity>
+  );
+}
 
 //Add Color Function
-  function addColor() {
-    setColorArray([
-      {
-        red: Math.floor(Math.random() * 256),
-        green: Math.floor(Math.random() * 256),
-        blue: Math.floor(Math.random() * 256),
-        id: `${colorArray.length}`,
-      },
-      ...colorArray,
-    ]);
-  }
+function addColor() {
+  setColorArray([
+    {
+      red: Math.floor(Math.random() * 256),
+      green: Math.floor(Math.random() * 256),
+      blue: Math.floor(Math.random() * 256),
+      id: `${colorArray.length}`,
+    },
+    ...colorArray,
+  ]);
+}
 
 //Reset Color Function
   function resetColor(){
     setColorArray([]);
   }
 
+
+  
 //Add Color Styling
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={{ 
-          width: "38%",
+          width: "80%",
           height: 30,
-          margin: 10,
+          marginTop: 20,
+          marginBottom: 10,
           alignItems: "center",
           justifyContent: "center", 
-          borderWidth: 2,
-          borderRadius: 10,
-          backgroundColor: "#F2A099",
-          borderColor: "#8C2703", 
+          borderRadius: 0,
+          backgroundColor: "#730217",
+          borderWidth: 1,
+          borderColor: "#D9933D", 
         }}
         onPress={addColor}
       >
         <Text
           style={{
-            color: "#8C2703",
-            fontSize: 11,
+            color: "#F29F8D",
+            fontSize: 14,
             
           }}
         >
-          ADD COLOUR
+          + ADD COLOUR
         </Text>
       </TouchableOpacity>
 
 {/* Reset Color Styling */}
       <TouchableOpacity
         style={{ 
-          width: "38%",
+          width: "80%",
           height: 30,
-          marginTop: 10,
+          marginTop: 0,
           margin: 10,
           alignItems: "center",
           justifyContent: "center", 
-          borderWidth: 2,
-          borderRadius: 10,
-          backgroundColor: "#BFBFBA",
-          borderColor: "#6F7355", 
+          borderRadius: 0,
+          backgroundColor: "#262626",
+          borderWidth: 1,
+          borderColor: "#D9933D", 
         }}
         onPress={resetColor}
       >
         <Text
           style={{
-            color: "#0D0D0D",
-            fontSize: 11,
+            color: "#D9D9D9",
+            fontSize: 14,
             
           }}
         >
-          RESET COLOUR
+          - RESET COLOUR
         </Text>
       </TouchableOpacity>
-      <FlatList style={styles.list} data={colorArray} renderItem={renderItem} />
+      <FlatList style={styles.list} data={colorArray} renderItem={renderItem} numColumns={5} />
     </View>
   );
 }
 
+function DetailsScreen({ route }) {
+  // Destructure this object so we don't have to type route.params.red etc
+  const { red, green, blue } = route.params;
+ 
+  return (
+    <View style={[styles.container, { backgroundColor: `rgb(${red}, ${green}, ${blue})` },]}>
+      <View style={{ 
+          width: "30%",
+          height: 30,
+          marginTop: "10%",
+          alignItems: "center",
+          justifyContent: "center", 
+          borderWidth: 2,
+          borderRadius: 0,
+          backgroundColor: "#A6243C",
+          borderColor: "#D96C75",  
+        }}>
+          <Text style={styles.detailTextRed}>Red: {red}</Text>
+      </View>
+
+      <View style={{ 
+          width: "30%",
+          height: 30,
+          marginTop: 5,
+          alignItems: "center",
+          justifyContent: "center", 
+          borderWidth: 2,
+          borderRadius: 0,
+          backgroundColor: "#4F5902",
+          borderColor: "#95A617",  
+        }}>
+          <Text style={styles.detailTextGreen}>Green: {green}</Text>
+      </View>
+
+      <View style={{ 
+          width: "30%",
+          height: 30,
+          marginTop: 5,
+          alignItems: "center",
+          justifyContent: "center", 
+          borderWidth: 2,
+          borderRadius: 0,
+          backgroundColor: "#0F3759",
+          borderColor: "#1B57A6",  
+        }}>
+           <Text style={styles.detailTextBlue}>Blue: {blue}</Text>
+      </View>
+
+    </View>
+  );
+ }
+ 
+
+// StackNavigator
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -106,6 +166,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Colour List" component={HomeScreen} />
+        <Stack.Screen name="Details" component={DetailsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -116,16 +177,37 @@ const styles = StyleSheet.create({
     flex: 1,
     // flexDirection: "row",
     alignContent: "space-between",
-    backgroundColor: "#fff",
+    backgroundColor: "#0D0D0D",
     alignItems: "center",
   },
+
   list: {
-    width: "100%",
-  },
-  row: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    
+    width: "80%",
+    margin: 10,
 
   },
+
+  detailTextRed: {
+  color: "#F2D4C2",
+  fontSize: 14,
+  fontWeight: "normal",
+  
+  },
+
+  detailTextGreen: {
+  color: "#D9C6B0",
+  fontSize: 14,
+  fontWeight: "normal",
+  
+  },
+
+  detailTextBlue: {
+  color: "#9BDAF2",
+  fontSize: 14,
+  fontWeight: "normal",
+  
+  },
+
 });
+
+
